@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento de Matrícula 2026</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const Plus = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        );
+        
+        const Trash2 = () => (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+        );
+        
+        const Download = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+        );
+        
+        const Calculator = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                <line x1="8" y1="6" x2="16" y2="6"></line>
+                <line x1="8" y1="10" x2="16" y2="10"></line>
+                <line x1="8" y1="14" x2="16" y2="14"></line>
+                <line x1="8" y1="18" x2="16" y2="18"></line>
+            </svg>
+        );
+
+        const OrcamentoMatricula = () => {
+            const [responsavel, setResponsavel] = useState('');
+            const [estudantes, setEstudantes] = useState([{ nome: '', serie: '' }]);
+            const [descontoGeral, setDescontoGeral] = useState(0);
+            const [descontoIrmaos, setDescontoIrmaos] = useState(0);
+            const [descontoAdicional, setDescontoAdicional] = useState(0);
+
+            const series = [
+                { nome: 'EI MATERNAL III', anuidade: 21778.89, parcela: 1814.91, livros: 998.50 },
+                { nome: 'EI JARDIM I', anuidade: 19264.98, parcela: 1605.42, livros: 1086.73 },
+                { nome: 'EI JARDIM II', anuidade: 19264.98, parcela: 1605.42, livros: 1086.73 },
+                { nome: 'EF 1º ANO', anuidade: 19264.98, parcela: 1605.42, livros: 1580.70 },
+                { nome: 'EF 2º ANO', anuidade: 19264.98, parcela: 1605.42, livros: 2034.96 },
+                { nome: 'EF 3º ANO', anuidade: 19338.36, parcela: 1611.53, livros: 2034.96 },
+                { nome: 'EF 4º ANO', anuidade: 19338.36, parcela: 1611.53, livros: 2034.96 },
+                { nome: 'EF 5º ANO', anuidade: 19338.36, parcela: 1611.53, livros: 2034.96 },
+                { nome: 'EF 6º ANO', anuidade: 18696.83, parcela: 1558.07, livros: 2498.63 },
+                { nome: 'EF 7º ANO', anuidade: 18696.83, parcela: 1558.07, livros: 2498.63 },
+                { nome: 'EF 8º ANO', anuidade: 18696.83, parcela: 1558.07, livros: 2498.63 },
+                { nome: 'EF 9º ANO', anuidade: 18696.83, parcela: 1558.07, livros: 2498.63 },
+                { nome: 'EM 1ª SÉRIE', anuidade: 18918.90, parcela: 1576.58, livros: 3372.46 },
+                { nome: 'EM 2ª SÉRIE', anuidade: 18918.90, parcela: 1576.58, livros: 3372.46 },
+                { nome: 'EM 3ª SÉRIE', anuidade: 18918.90, parcela: 1576.58, livros: 3492.93 },
+                { nome: 'EM 3ª SÉRIE MED', anuidade: 20077.14, parcela: 1673.10, livros: 3492.93 }
+            ];
+
+            const adicionarEstudante = () => {
+                setEstudantes([...estudantes, { nome: '', serie: '' }]);
+            };
+
+            const removerEstudante = (index) => {
+                if (estudantes.length > 1) {
+                    setEstudantes(estudantes.filter((_, i) => i !== index));
+                }
+            };
+
+            const atualizarEstudante = (index, campo, valor) => {
+                const novosEstudantes = [...estudantes];
+                novosEstudantes[index][campo] = valor;
+                setEstudantes(novosEstudantes);
+            };
+
+            const calcularTotal = () => {
+                let totalAnuidade = 0;
+                let totalLivros = 0;
+
+                estudantes.forEach(est => {
+                    const serieData = series.find(s => s.nome === est.serie);
+                    if (serieData) {
+                        totalAnuidade += serieData.anuidade;
+                        totalLivros += serieData.livros;
+                    }
+                });
+
+                const descontoAnuidade = totalAnuidade * (descontoGeral / 100);
+                const descontoIrmao = totalAnuidade * (descontoIrmaos / 100);
+                const adicional = totalAnuidade * (descontoAdicional / 100);
+                
+                const totalDescontos = descontoAnuidade + descontoIrmao + adicional;
+                const anuidadeFinal = totalAnuidade - totalDescontos;
+                
+                const livrosVista = totalLivros * 0.95;
+                const livrosParcelado = totalLivros / 6;
+
+                return {
+                    totalAnuidade,
+                    totalDescontos,
+                    anuidadeFinal,
+                    parcelaMensal: anuidadeFinal / 12,
+                    totalLivros,
+                    livrosVista,
+                    livrosParcelado
+                };
+            };
+
+            const totais = calcularTotal();
+
+            const gerarPDF = () => {
+                window.print();
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
+                    <div className="max-w-5xl mx-auto">
+                        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-t-2xl shadow-lg">
+                            <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">
+                                ORÇAMENTO DE MATRÍCULA - 2026
+                            </h1>
+                            <p className="text-center text-blue-100">Marabá-PA, segunda-feira, 29 de setembro de 2025</p>
+                        </div>
+
+                        <div className="bg-white p-6 md:p-8 shadow-xl">
+                            <div className="mb-6">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Nome do Responsável
+                                </label>
+                                <input
+                                    type="text"
+                                    value={responsavel}
+                                    onChange={(e) => setResponsavel(e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition"
+                                    placeholder="Digite o nome do responsável"
+                                />
+                            </div>
+
+                            <div className="mb-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-lg font-semibold text-gray-800">Estudantes</h3>
+                                    <button
+                                        onClick={adicionarEstudante}
+                                        className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                                    >
+                                        <Plus />
+                                        Adicionar Estudante
+                                    </button>
+                                </div>
+
+                                {estudantes.map((estudante, index) => (
+                                    <div key={index} className="mb-4 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <span className="font-semibold text-blue-600">Estudante {index + 1}</span>
+                                            {estudantes.length > 1 && (
+                                                <button
+                                                    onClick={() => removerEstudante(index)}
+                                                    className="text-red-500 hover:text-red-700 transition"
+                                                >
+                                                    <Trash2 />
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                                <input
+                                                    type="text"
+                                                    value={estudante.nome}
+                                                    onChange={(e) => atualizarEstudante(index, 'nome', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                                    placeholder="Nome do estudante"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Série</label>
+                                                <select
+                                                    value={estudante.serie}
+                                                    onChange={(e) => atualizarEstudante(index, 'serie', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                                >
+                                                    <option value="">Selecione a série</option>
+                                                    {series.map((serie) => (
+                                                        <option key={serie.nome} value={serie.nome}>
+                                                            {serie.nome}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mb-6 p-6 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                    <Calculator />
+                                    Descontos
+                                </h3>
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Desconto Geral (%)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={descontoGeral}
+                                            onChange={(e) => setDescontoGeral(Math.max(0, Number(e.target.value)))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                            min="0"
+                                            max="100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Desconto Irmãos (%)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={descontoIrmaos}
+                                            onChange={(e) => setDescontoIrmaos(Math.max(0, Number(e.target.value)))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                            min="0"
+                                            max="100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Desconto Adicional (%)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={descontoAdicional}
+                                            onChange={(e) => setDescontoAdicional(Math.max(0, Number(e.target.value)))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                            min="0"
+                                            max="100"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 rounded-lg">
+                                <h3 className="text-xl font-bold mb-4">Resumo Financeiro</h3>
+                                
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center pb-2 border-b border-blue-400">
+                                        <span className="font-medium">Anuidade Total</span>
+                                        <span className="text-xl font-bold">R$ {totais.totalAnuidade.toFixed(2)}</span>
+                                    </div>
+                                    
+                                    {totais.totalDescontos > 0 && (
+                                        <div className="flex justify-between items-center pb-2 border-b border-blue-400 text-green-300">
+                                            <span className="font-medium">Total de Descontos</span>
+                                            <span className="text-xl font-bold">- R$ {totais.totalDescontos.toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                    
+                                    <div className="flex justify-between items-center pb-2 border-b border-blue-400">
+                                        <span className="font-medium">Anuidade Final</span>
+                                        <span className="text-2xl font-bold">R$ {totais.anuidadeFinal.toFixed(2)}</span>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-medium">Parcela Mensal (12x)</span>
+                                        <span className="text-xl font-bold">R$ {totais.parcelaMensal.toFixed(2)}</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 pt-6 border-t border-blue-400">
+                                    <h4 className="font-bold text-lg mb-3">Material Didático (Livros)</h4>
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <span>Valor Total</span>
+                                            <span className="font-semibold">R$ {totais.totalLivros.toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center bg-green-500 bg-opacity-30 p-2 rounded">
+                                            <span>À Vista (5% desconto)</span>
+                                            <span className="font-bold">R$ {totais.livrosVista.toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span>Parcelado (6x sem juros)</span>
+                                            <span className="font-bold">6x de R$ {totais.livrosParcelado.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 text-center no-print">
+                                <button
+                                    onClick={gerarPDF}
+                                    className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 mx-auto shadow-lg"
+                                >
+                                    <Download />
+                                    Gerar PDF / Imprimir
+                                </button>
+                            </div>
+
+                            <div className="mt-8 p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                                <h3 className="font-bold text-lg mb-3 text-blue-800">
+                                    Documentos Necessários e Obrigatórios para Matrícula:
+                                </h3>
+                                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <ul className="space-y-1">
+                                            <li>• Histórico Escolar ou Ressalva (original)</li>
+                                            <li>• Uma Foto 3x4</li>
+                                            <li>• Certidão de Nascimento (cópia)</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <ul className="space-y-1">
+                                            <li>• CPF e RG do Responsável contratual (cópia)</li>
+                                            <li>• Comprovante de Residência (cópia)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p className="text-xs mt-4 text-gray-600 italic">
+                                    Esta documentação é exigida em conformidade com as Resoluções do Conselho Estadual de Educação, 
+                                    o Regimento Interno Escolar do Grupo Futuro Educacional e em respeito às disposições legais 
+                                    constantes do artigo 476 do Código Civil (Lei 10.406/2002) e artigo 5º da Lei 9.870/1999.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 rounded-b-2xl shadow-lg text-center text-sm">
+                            © 2025 - Sistema de Orçamento de Matrícula
+                        </div>
+                    </div>
+
+                    <style>{`
+                        @media print {
+                            body * {
+                                visibility: hidden;
+                            }
+                            .max-w-5xl, .max-w-5xl * {
+                                visibility: visible;
+                            }
+                            .max-w-5xl {
+                                position: absolute;
+                                left: 0;
+                                top: 0;
+                                width: 100%;
+                            }
+                            .no-print {
+                                display: none !important;
+                            }
+                            button {
+                                display: none !important;
+                            }
+                            .bg-gradient-to-br {
+                                background: white !important;
+                            }
+                        }
+                    `}</style>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<OrcamentoMatricula />, document.getElementById('root'));
+    </script>
+</body>
+</html>
